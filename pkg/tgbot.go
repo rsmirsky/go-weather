@@ -42,11 +42,17 @@ func ConnectToBot() {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
+			// TODO: Добавить обработку команды /start
+
 			cityUser, err := cityList.GetCityId(update.Message.Text)
 			if err != nil {
 				// wrong city
 				// send message to telegram "unknown error"
-				msgTemp := "The city is incorrect.\nThe name of the city is written in Latin letters.\n'Kiev, Dnipro, Kharkiv, Odessa..."
+				msgTemp := "The city is incorrect.\nThe name of the city is written in Latin letters.\n'Kyiv, Dnipro, Kharkiv, Odessa..."
+				
+				// TODO: исправить Название города Kyiv
+				// TODO: Понять почему Одесса в ответе возвращается с одной буквой (или в запросе с двумя)
+				
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgTemp)
 				bot.Send(msg)
 			} else {
