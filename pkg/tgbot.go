@@ -48,22 +48,59 @@ func ConnectToBot() {
 			if err != nil {
 				// wrong city
 				// send message to telegram "unknown error"
-				msgTemp := "The city is incorrect.\nThe name of the city is written in Latin letters.\n'Kyiv, Dnipro, Kharkiv, Odessa..."
 				
-				// TODO: исправить Название города Kyiv
+				
+				// TODO вынести в константу
+				wrongCityMessage := "Enter the name of your city in Latin letters.\nKyiv, Dnipro, Kharkiv, Odessa..."
+				
+				// TODO: Правильно назвать переменные
+
 				// TODO: Понять почему Одесса в ответе возвращается с одной буквой (или в запросе с двумя)
 				
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgTemp)
+				// TODO: Поудалять ненужные комментарии которые не относятся к коду
+
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, wrongCityMessage)
 				bot.Send(msg)
 			} else {
 				//fmt.Println(cityUser)
 				userCityTemp, userCity := ConnectToApi(cityUser)
-             	msgTemp := fmt.Sprintf("in the city of %s %g degrees C",userCity, userCityTemp)
-			 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgTemp)
+         		
+				
+				// TODO: вынести в константу
+				weatherMessage := `In the city %s 
+Temperature: %g°C
+Min temperature: 
+Max temperature: `
+
+				// TODO: Возвращать больше информации о погоде, насколько возможно
+				
+				message := fmt.Sprintf(weatherMessage, userCity, userCityTemp)
+			 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, message)
 			 	bot.Send(msg)
 				
 			}
+            
 
+
+
+
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+
+		// Extract the command from the Message.
+		switch update.Message.Command() {
+		case "help":
+			msg.Text = "I understand /sayhi and /status."
+		case "start":
+			msg.Text = "Hi :)"
+		case "status":
+			msg.Text = "I'm ok."
+		default:
+			msg.Text = "I don't know that command"
+		}
+
+		if _, err := bot.Send(msg); err != nil {
+			log.Panic(err)
+		}
 
 			
 
@@ -94,6 +131,8 @@ func ConnectToBot() {
 
 }
 
+// TODO: переименовать в GetWeather
+// TODO: Возвращать структуру Weather
 func ConnectToApi(cityUser float64) (float64, string) {
 	
     var cityNum float64 = cityUser
@@ -120,14 +159,13 @@ func ConnectToApi(cityUser float64) (float64, string) {
 		log.Fatalln(err, "unmarshal error")
 	}
 
-	tempC, userCity := weather.GetC()
-	return tempC, userCity
+	return weather.GetCelsius(), weather.Name
+	
 
 	//fmt.Println("Текущая температура в Киеве", tempC)
 
 	//var tokenBot string = "5294861035:AAFBhY-RL88hOkAccUW_Xz7Jh83a6Iwpa8Y"
 
 	//ConnectToBot(tokenBot, tempC)
-
 
 }

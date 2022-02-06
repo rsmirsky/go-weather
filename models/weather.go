@@ -59,7 +59,6 @@ type Sys struct {
 	Sunset  int    `json:"sunset"`
 }
 
-func (w MainWeather) GetC() (float64, string) {
-	return math.Round(w.Main.Temp - 273.15), w.Name
-
+func (w MainWeather) GetCelsius() float64 {
+	return math.Round(w.Main.Temp - 273.15)
 }
