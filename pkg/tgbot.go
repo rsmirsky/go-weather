@@ -1,26 +1,19 @@
 package pkg
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"weather/models"
-	"encoding/json"
-	"io/ioutil"
+
 	//"log"
 	"net/http"
 	//"weather/models"
 
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-const( 
-	wrongCityMessage = "Enter the name of your city in Latin letters.\nKyiv, Dnipro, Kharkiv, Odessa..."
-	weatherMessage = `In the city %s 
-	Temperature: %g°C
-	Min temperature: 
-	Max temperature: `
-)
 func ConnectToBot() {
 
     var tokenBot string = "5294861035:AAFBhY-RL88hOkAccUW_Xz7Jh83a6Iwpa8Y"
@@ -49,7 +42,9 @@ func ConnectToBot() {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-	
+			// TODO: принимать город в формате kyiv/Kyiv 
+			// регистронезависимо
+			// когда сравниваешь строки - обычно это делается в LowerCase
 
 			cityUser, err := cityList.GetCityId(update.Message.Text)
 			if err != nil {
@@ -70,15 +65,14 @@ func ConnectToBot() {
 				bot.Send(msg)
 			} else {
 				//fmt.Println(cityUser)
-				userCityTemp, userCity := GetWeather(cityUser)
-         		
-				
-				// TODO: вынести в константу
-				
 
+		
+				getWeatherStruct := GetWeather(cityUser)
+         		
+			
 				// TODO: Возвращать больше информации о погоде, насколько возможно
 				
-				message := fmt.Sprintf(weatherMessage, userCity, userCityTemp)
+				message := fmt.Sprintf(weatherMessage, getWeatherStruct.Name, getWeatherStruct.GetCelsius(), getWeatherStruct.GetCelsiusMin(),getWeatherStruct.GetCelsiusMax(), getWeatherStruct.GetClouds())
 			 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, message)
 			 	bot.Send(msg)
 				
@@ -88,23 +82,23 @@ func ConnectToBot() {
 
 
 
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+		// msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 
-		// Extract the command from the Message.
-		switch update.Message.Command() {
-		case "help":
-			msg.Text = "I understand /sayhi and /status."
-		case "start":
-			msg.Text = "Hi :)"
-		case "status":
-			msg.Text = "I'm ok."
-		default:
-			msg.Text = "I don't know that command"
-		}
+		// // Extract the command from the Message.
+		// switch update.Message.Command() {
+		// case "help":
+		// 	msg.Text = "I understand /sayhi and /status."
+		// case "start":
+		// 	msg.Text = "Hi :)"
+		// case "status":
+		// 	msg.Text = "I'm ok."
+		// default:
+		// 	msg.Text = "I don't know that command"
+		// }
 
-		if _, err := bot.Send(msg); err != nil {
-			log.Panic(err)
-		}
+		// if _, err := bot.Send(msg); err != nil {
+		// 	log.Panic(err)
+		// }
 
 			
 
@@ -137,7 +131,8 @@ func ConnectToBot() {
 
 
 // TODO: Возвращать структуру Weather
-func GetWeather(cityUser float64) (float64, string) {
+// TODO: возвращать ошибку вторым аргументом
+func GetWeather(cityUser float64) (weather *models.MainWeather) {
 	
     var cityNum float64 = cityUser
 
@@ -157,13 +152,13 @@ func GetWeather(cityUser float64) (float64, string) {
 	// fmt.Println(string(b))
 	// fmt.Println("=========")
 
-	weather := &models.MainWeather{}
+	weather = &models.MainWeather{}
 	err = json.Unmarshal([]byte(b), weather)
 	if err != nil {
 		log.Fatalln(err, "unmarshal error")
 	}
 
-	return weather.GetCelsius(), weather.Name
+	return weather
 	
 
 	//fmt.Println("Текущая температура в Киеве", tempC)
@@ -175,3 +170,14 @@ func GetWeather(cityUser float64) (float64, string) {
 }
 
 
+
+
+const( 
+	wrongCityMessage = "Enter the name of your city in Latin letters.\nKyiv, Dnipro, Kharkiv, Odessa..."
+	weatherMessage = `In the city %s 
+	Temperature: %g°C
+	Min temperature: %g°C
+	Max temperature: %g°C
+	Clouds: %s
+	`
+)

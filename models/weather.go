@@ -5,19 +5,19 @@ import (
 )
 
 type MainWeather struct {
-	Coord      Coord
-	Weather    []Weather
-	Base       string `json:"base"`
-	Main       Main
-	Visibility int `json:"visibility"`
-	Wind       Wind
-	Clouds     Clouds
-	Dt         int `json:"dt"`
-	Sys        Sys
-	Timezone   int    `json:"timezone"`
-	Id         int    `json:"703448"`
-	Name       string `json:"name"`
-	Cod        int    `json:"cod"`
+	Coord      Coord     `json:"coord"`
+	Weather    []Weather `json:"weather"`
+	Base       string    `json:"base"`
+	Main       Main      `json:"main"`
+	Visibility int       `json:"visibility"`
+	Wind       Wind      `json:"wind"`
+	Clouds     Clouds    `json:"clouds"`
+	Dt         int       `json:"dt"`
+	Sys        Sys       `json:"sys"`
+	Timezone   int       `json:"timezone"`
+	Id         int       `json:"id"`
+	Name       string    `json:"name"`
+	Cod        int       `json:"cod"`
 }
 
 type Coord struct {
@@ -33,12 +33,12 @@ type Weather struct {
 }
 
 type Main struct {
-	Temp       float64 `json:"temp"`
-	Feels_like float64 `json:"feels_like"`
-	Temp_min   float64 `json:"temp_min"`
-	Temp_max   float64 `json:"temp_max"`
-	Pressure   int     `json:"pressure"`
-	Humidity   int     `json:"humidity"`
+	Temp      float64 `json:"temp"`
+	FeelsLike float64 `json:"feels_like"`
+	TempMin   float64 `json:"temp_min"`
+	TempMax   float64 `json:"temp_max"`
+	Pressure  int     `json:"pressure"`
+	Humidity  int     `json:"humidity"`
 }
 
 type Wind struct {
@@ -61,4 +61,19 @@ type Sys struct {
 
 func (w MainWeather) GetCelsius() float64 {
 	return math.Round(w.Main.Temp - 273.15)
+}
+
+func (w MainWeather) GetCelsiusMin() float64 {
+	return math.Round(w.Main.TempMin - 273.15)
+}
+
+func (w MainWeather) GetCelsiusMax() float64 {
+	return math.Round(w.Main.TempMax - 273.15)
+}
+
+func (w MainWeather) GetClouds() string {
+	if len(w.Weather) > 0 {
+		return w.Weather[0].Description
+	}
+	return ""
 }
