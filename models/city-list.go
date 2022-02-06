@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type CityList []City
@@ -56,8 +57,9 @@ func GetCityList() (CityList, error) {
 }
 
 func (c CityList) GetCityId(cityName string) (float64, error) {
+    cityNameLower := strings.Title(strings.ToLower(cityName))
 	for _, city := range c {
-		if cityName == city.Name {
+		if cityNameLower == city.Name {
 			return city.Id, nil
 		}
 	}

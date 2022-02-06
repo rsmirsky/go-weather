@@ -46,13 +46,15 @@ func ConnectToBot() {
 			// регистронезависимо
 			// когда сравниваешь строки - обычно это делается в LowerCase
 
+        
+
 			cityUser, err := cityList.GetCityId(update.Message.Text)
 			if err != nil {
 				// wrong city
 				// send message to telegram "unknown error"
 				
 				
-				// TODO вынести в константу
+				
 				
 				
 				// TODO: Правильно назвать переменные
