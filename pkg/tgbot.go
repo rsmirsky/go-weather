@@ -63,7 +63,7 @@ func ConnectToBot() {
 				bot.Send(msg)
 			} else {
 				//fmt.Println(cityUser)
-				userCityTemp, userCity := ConnectToApi(cityUser)
+				userCityTemp, userCity := GetWeather(cityUser)
          		
 				
 				// TODO: вынести в константу
@@ -133,7 +133,7 @@ Max temperature: `
 
 // TODO: переименовать в GetWeather
 // TODO: Возвращать структуру Weather
-func ConnectToApi(cityUser float64) (float64, string) {
+func GetWeather(cityUser float64) (float64, string) {
 	
     var cityNum float64 = cityUser
 
