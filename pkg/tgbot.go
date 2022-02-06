@@ -14,6 +14,13 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+const( 
+	wrongCityMessage = "Enter the name of your city in Latin letters.\nKyiv, Dnipro, Kharkiv, Odessa..."
+	weatherMessage = `In the city %s 
+	Temperature: %g°C
+	Min temperature: 
+	Max temperature: `
+)
 func ConnectToBot() {
 
     var tokenBot string = "5294861035:AAFBhY-RL88hOkAccUW_Xz7Jh83a6Iwpa8Y"
@@ -42,7 +49,7 @@ func ConnectToBot() {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-			// TODO: Добавить обработку команды /start
+	
 
 			cityUser, err := cityList.GetCityId(update.Message.Text)
 			if err != nil {
@@ -51,7 +58,7 @@ func ConnectToBot() {
 				
 				
 				// TODO вынести в константу
-				wrongCityMessage := "Enter the name of your city in Latin letters.\nKyiv, Dnipro, Kharkiv, Odessa..."
+				
 				
 				// TODO: Правильно назвать переменные
 
@@ -67,10 +74,7 @@ func ConnectToBot() {
          		
 				
 				// TODO: вынести в константу
-				weatherMessage := `In the city %s 
-Temperature: %g°C
-Min temperature: 
-Max temperature: `
+				
 
 				// TODO: Возвращать больше информации о погоде, насколько возможно
 				
@@ -131,7 +135,7 @@ Max temperature: `
 
 }
 
-// TODO: переименовать в GetWeather
+
 // TODO: Возвращать структуру Weather
 func GetWeather(cityUser float64) (float64, string) {
 	
@@ -169,3 +173,5 @@ func GetWeather(cityUser float64) (float64, string) {
 	//ConnectToBot(tokenBot, tempC)
 
 }
+
+
