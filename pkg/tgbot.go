@@ -42,22 +42,13 @@ func ConnectToBot() {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-			// TODO: принимать город в формате kyiv/Kyiv 
-			// регистронезависимо
-			// когда сравниваешь строки - обычно это делается в LowerCase
 
-        
 
-			cityUser, err := cityList.GetCityId(update.Message.Text)
+			cityUser, userCityName, err := cityList.GetCityId(update.Message.Text)
 			if err != nil {
 				// wrong city
 				// send message to telegram "unknown error"
-				
-				
-				
-				
-				
-				// TODO: Правильно назвать переменные
+			
 
 				// TODO: Понять почему Одесса в ответе возвращается с одной буквой (или в запросе с двумя)
 				
@@ -68,13 +59,15 @@ func ConnectToBot() {
 			} else {
 				//fmt.Println(cityUser)
 
-		
+		        
 				getWeatherStruct := GetWeather(cityUser)
-         		
+				fmt.Println("---------------")
+				fmt.Println(getWeatherStruct.Name)
+				fmt.Println("---------------")
 			
 				// TODO: Возвращать больше информации о погоде, насколько возможно
 				
-				message := fmt.Sprintf(weatherMessage, getWeatherStruct.Name, getWeatherStruct.GetCelsius(), getWeatherStruct.GetCelsiusMin(),getWeatherStruct.GetCelsiusMax(), getWeatherStruct.GetClouds())
+				message := fmt.Sprintf(weatherMessage, userCityName, getWeatherStruct.GetCelsius(), getWeatherStruct.GetCelsiusMin(),getWeatherStruct.GetCelsiusMax(), getWeatherStruct.GetClouds())
 			 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, message)
 			 	bot.Send(msg)
 				
@@ -132,7 +125,6 @@ func ConnectToBot() {
 }
 
 
-// TODO: Возвращать структуру Weather
 // TODO: возвращать ошибку вторым аргументом
 func GetWeather(cityUser float64) (weather *models.MainWeather) {
 	

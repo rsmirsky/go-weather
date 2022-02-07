@@ -58,12 +58,12 @@ func GetCityList() (CityList, error) {
 
 
 
-func (c CityList) GetCityId(cityName string) (float64, error) {
+func (c CityList) GetCityId(cityName string) (float64, string, error) {
 	userCityNameLower := strings.ToLower(cityName)
 	for _, city := range c {
 		if userCityNameLower == strings.ToLower(city.Name) {
-			return city.Id, nil
+			return city.Id, city.Name, nil
 		}
 	}
-	return -1, fmt.Errorf("unknown city")
+	return -1,"", fmt.Errorf("unknown city")
 }
