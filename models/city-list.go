@@ -56,10 +56,12 @@ func GetCityList() (CityList, error) {
 
 }
 
+
+
 func (c CityList) GetCityId(cityName string) (float64, error) {
-    cityNameLower := strings.Title(strings.ToLower(cityName))
+	userCityNameLower := strings.ToLower(cityName)
 	for _, city := range c {
-		if cityNameLower == city.Name {
+		if userCityNameLower == strings.ToLower(city.Name) {
 			return city.Id, nil
 		}
 	}
