@@ -1,8 +1,18 @@
-package models
+package openweathermap
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 )
+
+var appid string
+
+func Init(a string) {
+	appid = a
+}
 
 type MainWeather struct {
 	Coord      Coord     `json:"coord"`
@@ -76,4 +86,28 @@ func (w MainWeather) GetClouds() string {
 		return w.Weather[0].Description
 	}
 	return ""
+}
+
+func GetWeather(cityUser float64) (MainWeather, error) {
+	var result MainWeather
+
+	var cityNum float64 = cityUser
+	var link = fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?id=%.0f&appid=%s", cityNum, appid)
+	fmt.Println("http.Get url: ", link)
+	resp, err := http.Get(link)
+	if err != nil {
+		return result, err
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return result, err
+	}
+
+	err = json.Unmarshal([]byte(b), &result)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
 }

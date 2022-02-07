@@ -1,4 +1,4 @@
-package config
+package db
 
 import (
 	"gorm.io/driver/mysql"
@@ -9,14 +9,13 @@ var (
 	db *gorm.DB
 )
 
-func Connect() {
-
-	dsn := "root:@tcp(127.0.0.1:3306)/weather?charset=utf8mb4&parseTime=True&loc=Local"
+func Connect(dsn string) error {
 	d, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		return err
 	}
 	db = d
+	return nil
 }
 
 func GetDB() *gorm.DB {
