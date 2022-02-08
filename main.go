@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	req "weather/models/requests"
 	"weather/openweathermap"
+
+	"weather/db"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/spf13/viper"
@@ -11,10 +14,18 @@ import (
 
 func main() {
 
-	// db url: root:@tcp(127.0.0.1:3306)/weather?charset=utf8mb4&parseTime=True&loc=Local
-
 	viper.SetConfigFile(".env")
-	viper.ReadInConfig()
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println("error read in config: ", err)
+		return
+	}
+
+	if err := db.Connect(viper.GetString("DSN_MYSQL")); err != nil {
+		fmt.Println("error connect to db:", err)
+		return
+	}
+
+	db.RunMigrates()
 
 	openweathermap.Init(viper.GetString("OPENWEATHERMAP_APPID"))
 
@@ -42,7 +53,7 @@ func RunBot(botToken string) {
 		fmt.Println("Failed to get city list: ", err)
 		return
 	}
-
+    var IsCityVal bool = true
 	for update := range updates {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
@@ -53,6 +64,7 @@ func RunBot(botToken string) {
 				// Wrong city
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, wrongCityMessage)
 				bot.Send(msg)
+				IsCityVal = false
 			} else {
 
 				// Correct city
@@ -63,10 +75,27 @@ func RunBot(botToken string) {
 				}
 
 				message := fmt.Sprintf(weatherMessage, update.Message.Text, weather.GetCelsius(), weather.GetCelsiusMin(), weather.GetCelsiusMax(), weather.GetClouds())
+				IsCityVal = true
+				//models.SaveWeatherQueryToDB(update.Message.Text string)
+				//userHistory := &models.History{}
+				//userHistory := &models.History{}
+				//userHistory.TelegramUserID =
+				//models.SaveWeatherQueryToDB()
+
+				
+
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, message)
 				bot.Send(msg)
+
 			}
 		}
+		history := req.NewHistory{
+			TelegramChatID:   update.Message.Chat.ID,
+			TelegramUserName: update.Message.From.UserName,
+			Command:          update.Message.Text,
+			IsCity:           IsCityVal,
+		}
+		db.CreateHistory(history)
 	}
 }
 
