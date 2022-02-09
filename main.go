@@ -53,7 +53,7 @@ func RunBot(botToken string) {
 		fmt.Println("Failed to get city list: ", err)
 		return
 	}
-    var IsCityVal bool = true
+    var IsCityVal bool 
 	for update := range updates {
 		if update.Message != nil { // If we got a message
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
